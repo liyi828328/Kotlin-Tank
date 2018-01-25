@@ -1,0 +1,5 @@
+rootProject.name = 'GameTank'
+include 'GameEngine'
+include 'GameEngine'
+rootProject.name = 'GameTank'
+
