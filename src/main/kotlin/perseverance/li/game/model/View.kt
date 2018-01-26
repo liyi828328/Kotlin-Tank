@@ -2,6 +2,11 @@ package perseverance.li.game.model
 
 import perseverance.li.engine.core.Painter
 
+/**
+ * Kotlin 抽象类，如果需要被继承需要加 open 关键字
+ *
+ * 抽象类中的成员是可以抽象的,这个很吊
+ */
 abstract open class View {
 
     /**
@@ -12,6 +17,23 @@ abstract open class View {
      * y轴坐标
      */
     abstract val y: Int
+
+    /**
+     * View的宽度
+     */
+    var  width: Int = 0
+    /**
+     * View的高度
+     */
+    var height: Int = 0
+
+    /**
+     * 初始化
+     */
+    init {
+        width = getViewWidth()
+        height = getViewHeight()
+    }
 
     /**
      * 元素的宽度

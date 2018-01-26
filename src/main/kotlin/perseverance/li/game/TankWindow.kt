@@ -1,9 +1,13 @@
 package perseverance.li.game
 
 import javafx.application.Application
+import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import perseverance.li.engine.core.Window
+import perseverance.li.game.business.IBlockable
+import perseverance.li.game.business.IMovable
 import perseverance.li.game.model.*
+import perseverance.li.game.enums.Direction
 import java.io.File
 
 class TankWindow : Window(title = "坦克大战1.0",
@@ -11,7 +15,8 @@ class TankWindow : Window(title = "坦克大战1.0",
         width = Config.gameWidth,
         height = Config.gameHeight) {
 
-    var mapViewList = arrayListOf<View>()
+    private lateinit var tank: Tank
+    private var mapViewList = arrayListOf<View>()
 
     override fun onCreate() {
         val mapFile = File(javaClass.getResource("/map/1.map").path)
@@ -32,6 +37,8 @@ class TankWindow : Window(title = "坦克大战1.0",
             }
             row++
         }
+        tank = Tank(2 * Config.block, 12 * Config.block)
+        mapViewList.add(tank)
     }
 
     override fun onDisplay() {
@@ -41,9 +48,38 @@ class TankWindow : Window(title = "坦克大战1.0",
     }
 
     override fun onRefresh() {
+        //检测移动物体的碰撞
+        //1.找到移动物体
+        //2.找到阻塞物体
+        //3.检测移动物体是否可以与周围的阻塞物体产生碰撞
+        mapViewList.filter { it is IMovable }.forEach { move ->
+            move as IMovable
+            var badDirection: Direction? = null
+            var badBlockView: View? = null
+            mapViewList.filter { it is IBlockable }.forEach breakTag@ { block ->
+                block as IBlockable
+                //检测运动物体与阻塞物体是否可以发生碰撞
+                val direction = move.willCollision(block)
+                if (direction != null) {
+                    badBlockView = block
+                    badDirection = direction
+                    return@breakTag
+                }
+            }
+            move.notifyCollision(badDirection, badBlockView)
+        }
+
     }
 
     override fun onKeyPressed(event: KeyEvent) {
+        var direction: Direction = when (event.code) {
+            KeyCode.UP -> Direction.UP
+            KeyCode.DOWN -> Direction.DOWN
+            KeyCode.LEFT -> Direction.LEFT
+            KeyCode.RIGHT -> Direction.RIGHT
+            else -> Direction.UP
+        }
+        tank.move(direction)
     }
 }
 
