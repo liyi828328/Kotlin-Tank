@@ -72,14 +72,24 @@ class TankWindow : Window(title = "坦克大战1.0",
     }
 
     override fun onKeyPressed(event: KeyEvent) {
-        var direction: Direction = when (event.code) {
-            KeyCode.UP -> Direction.UP
-            KeyCode.DOWN -> Direction.DOWN
-            KeyCode.LEFT -> Direction.LEFT
-            KeyCode.RIGHT -> Direction.RIGHT
-            else -> Direction.UP
+        when (event.code) {
+            KeyCode.UP, KeyCode.W -> {
+                tank.move(Direction.UP)
+            }
+            KeyCode.DOWN, KeyCode.S -> {
+                tank.move(Direction.DOWN)
+            }
+            KeyCode.LEFT, KeyCode.A -> {
+                tank.move(Direction.LEFT)
+            }
+            KeyCode.RIGHT, KeyCode.D -> {
+                tank.move(Direction.RIGHT)
+            }
+            KeyCode.SPACE, KeyCode.BACK_SPACE -> {
+                println("shoot")
+                mapViewList.add(tank.shoot())
+            }
         }
-        tank.move(direction)
     }
 }
 

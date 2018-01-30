@@ -17,24 +17,6 @@ abstract open class View {
      * y轴坐标
      */
     abstract val y: Int
-
-    /**
-     * View的宽度
-     */
-    var  width: Int = 0
-    /**
-     * View的高度
-     */
-    var height: Int = 0
-
-    /**
-     * 初始化
-     */
-    init {
-        width = getViewWidth()
-        height = getViewHeight()
-    }
-
     /**
      * 元素的宽度
      */
@@ -54,5 +36,4 @@ abstract open class View {
     fun draw() {
         Painter.drawImage(getViewImg(), x, y)
     }
-
 }
