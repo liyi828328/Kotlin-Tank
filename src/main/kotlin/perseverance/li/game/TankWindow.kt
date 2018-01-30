@@ -4,11 +4,14 @@ import javafx.application.Application
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import perseverance.li.engine.core.Window
+import perseverance.li.game.business.IAutoMovable
 import perseverance.li.game.business.IBlockable
+import perseverance.li.game.business.IDestroyable
 import perseverance.li.game.business.IMovable
 import perseverance.li.game.model.*
 import perseverance.li.game.enums.Direction
 import java.io.File
+import java.util.concurrent.CopyOnWriteArrayList
 
 class TankWindow : Window(title = "坦克大战1.0",
         icon = "icon/logo.png",
@@ -16,7 +19,10 @@ class TankWindow : Window(title = "坦克大战1.0",
         height = Config.gameHeight) {
 
     private lateinit var tank: Tank
-    private var mapViewList = arrayListOf<View>()
+    //线程不安全的集合，会导致跨线程操作时异常
+    //private var mapViewList = arrayListOf<View>()
+    //线程安全的结合
+    private var mapViewList = CopyOnWriteArrayList<View>()
 
     override fun onCreate() {
         val mapFile = File(javaClass.getResource("/map/1.map").path)
@@ -42,6 +48,7 @@ class TankWindow : Window(title = "坦克大战1.0",
     }
 
     override fun onDisplay() {
+        println("${mapViewList.size}")
         mapViewList.forEach {
             it.draw()
         }
@@ -68,7 +75,16 @@ class TankWindow : Window(title = "坦克大战1.0",
             }
             move.notifyCollision(badDirection, badBlockView)
         }
-
+        //检测可自动移动的模块
+        mapViewList.filter { it is IAutoMovable }.forEach {
+            it as IAutoMovable
+            it.autoMove()
+        }
+        //检测可销毁的模块
+        mapViewList.filter { it is IDestroyable }.forEach {
+            it as IDestroyable
+            if (it.isDestory()) mapViewList.remove(it)
+        }
     }
 
     override fun onKeyPressed(event: KeyEvent) {
@@ -85,8 +101,7 @@ class TankWindow : Window(title = "坦克大战1.0",
             KeyCode.RIGHT, KeyCode.D -> {
                 tank.move(Direction.RIGHT)
             }
-            KeyCode.SPACE, KeyCode.BACK_SPACE -> {
-                println("shoot")
+            KeyCode.SPACE, KeyCode.ENTER -> {
                 mapViewList.add(tank.shoot())
             }
         }
