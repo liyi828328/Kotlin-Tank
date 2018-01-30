@@ -50,6 +50,6 @@ class Bullet(override val currentDirection: Direction,
         super.draw()
     }
 
-    override fun isDestory(): Boolean =
+    override fun isDestroy(): Boolean =
             x < -bulletWidth || x > Config.gameWidth || y < -bulletHeight || y > Config.gameHeight
 }

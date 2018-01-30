@@ -83,7 +83,7 @@ class TankWindow : Window(title = "坦克大战1.0",
         //检测可销毁的模块
         mapViewList.filter { it is IDestroyable }.forEach {
             it as IDestroyable
-            if (it.isDestory()) mapViewList.remove(it)
+            if (it.isDestroy()) mapViewList.remove(it)
         }
     }
 
